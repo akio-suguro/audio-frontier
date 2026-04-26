@@ -28,6 +28,9 @@ def recommend(text: str):
     # ⑤ Blueprint生成
     blueprint = generate_blueprint(text, novelty)
 
+    print("SIM:", sims[:3])
+    print("NOVELTY:", novelty)
+
     return {
         "input": text,
         "novelty_score": float(novelty),
