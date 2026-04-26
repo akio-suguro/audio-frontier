@@ -8,6 +8,8 @@ class FaissIndex:
         self.dim = dim
         self.index_path = index_path
 
+        os.makedirs(os.path.dirname(index_path), exist_ok=True)
+
         if os.path.exists(index_path):
             self.index = faiss.read_index(index_path)
         else:
@@ -25,5 +27,6 @@ class FaissIndex:
 
     def save(self):
         faiss.write_index(self.index, self.index_path)
+
         with open(self.index_path + ".meta", "wb") as f:
             pickle.dump(self.metadata, f)

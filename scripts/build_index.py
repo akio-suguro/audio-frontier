@@ -11,27 +11,43 @@ index = FaissIndex(dim=DIM)
 vectors = []
 metadata = []
 
-for file in os.listdir(DATA_DIR):
-    if not file.endswith(".mp3"):
-        continue
+count = 0
 
-    path = os.path.join(DATA_DIR, file)
+for root, _, files in os.walk(DATA_DIR):
+    for file in files:
+        if not file.endswith(".mp3"):
+            continue
 
-    try:
-        audio_feat = extract_audio_features(path)
+        path = os.path.join(root, file)
 
-        text = "instrumental experimental music"
-        vec = fuse_features(text, audio_feat)
+        try:
+            audio_feat = extract_audio_features(path)
 
-        vectors.append(vec)
+            text = "instrumental experimental music"
+            vec = fuse_features(text, audio_feat)
 
-        metadata.append({
-            "file": file,
-            "bpm": audio_feat["bpm"]
-        })
+            if vec is not None:
+                vectors.append(vec)
 
-    except Exception as e:
-        print("error:", file, e)
+                metadata.append({
+                    "file": file,
+                    "bpm": audio_feat["bpm"]
+                })
+
+                count += 1
+
+                if count > 200:
+                    break
+
+        except Exception as e:
+            print("error:", file, e)
+
+    if count > 200:
+        break
+
+
+if len(vectors) == 0:
+    raise ValueError("No vectors created!")
 
 index.add(vectors, metadata)
 index.save()
